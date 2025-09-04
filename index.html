@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    input[type="checkbox"] {
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    table {
+      margin: 30px auto;
+      width: 80%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Registration Form</h1>
+  <form id="registrationForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" required>
+
+    <label for="dob">Date of Birth:</label>
+    <input type="date" id="dob" required>
+
+    <label>
+      <input type="checkbox" id="terms" required> Accept Terms & Conditions
+    </label>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <table id="entriesTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Dob</th>
+        <th>Accepted terms?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Entries will appear here -->
+    </tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("registrationForm");
+    const tableBody = document.querySelector("#entriesTable tbody");
+
+    // Load saved entries from local storage
+    window.onload = () => {
+      const savedEntries = JSON.parse(localStorage.getItem("entries")) || [];
+      savedEntries.forEach(entry => addRow(entry));
+    };
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const dob = document.getElementById("dob").value;
+      const terms = document.getElementById("terms").checked;
+
+      // Age validation (18–55)
+      const age = getAge(dob);
+      if (age < 18 || age > 55) {
+        alert("Age must be between 18 and 55 years.");
+        return;
+      }
+
+      const entry = { name, email, password, dob, terms };
+      
+      addRow(entry);
+
+      // Save to local storage
+      const savedEntries = JSON.parse(localStorage.getItem("entries")) || [];
+      savedEntries.push(entry);
+      localStorage.setItem("entries", JSON.stringify(savedEntries));
+
+      form.reset();
+    });
+
+    function addRow(entry) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${entry.name}</td>
+        <td>${entry.email}</td>
+        <td>${entry.password}</td>
+        <td>${entry.dob}</td>
+        <td>${entry.terms ? "Yes" : "No"}</td>
+      `;
+      tableBody.appendChild(row);
+    }
+
+    function getAge(dob) {
+      const dobDate = new Date(dob);
+      const diff = Date.now() - dobDate.getTime();
+      const ageDt = new Date(diff);
+      return Math.abs(ageDt.getUTCFullYear() - 1970);
+    }
+  </script>
+
+</body>
+</html>
